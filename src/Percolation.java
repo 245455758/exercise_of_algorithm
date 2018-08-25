@@ -1,13 +1,16 @@
+import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
 	
 	int[][] grid;
 	boolean[][] isOpen;
+	WeightedQuickUnionUF wqu ;
 	int[] dx = {-1,0,1,0};
 	int[] dy = {0,-1,0,1};
 	int n = 0,numbers=0;
 	public Percolation(int n) {
 		this.n = n;
+		wqu = new WeightedQuickUnionUF(n*n+2);
 		if(n<=0) throw new java.lang.IllegalArgumentException();
 		int count = 1;
 		grid = new int[n+1][];
@@ -27,11 +30,21 @@ public class Percolation {
 		if(!isOpen[row][col]) {
 			isOpen[row][col]=true;
 			numbers++;
+			int index = row*n+col;
 			for(int i=0;i<4;i++) {
-				int x = row+dy[i];
-				int y = col+dx[i];
-				//TODO  连接四周的点
-				
+				int y = row+dy[i];
+				int x = col+dx[i];
+				if(x>0&&x<=n&&y>0&&y<=n) {
+					if(wqu.connected(index, y*n+x)) {
+						wqu.union(index, y*n+x);
+					}
+				}
+			}
+			for (int i = 1; i <= n; i++) {
+				wqu.union(i, 0);
+			}
+			for (int i = n*n; i >n*n-n; i--) {
+				wqu.union(i, n*n+1);
 			}
 		}
 	}
@@ -43,7 +56,7 @@ public class Percolation {
 	
 	public boolean isFull(int row,int col) {
 		if(row<=0||col<=0||row>n||col>n) throw new java.lang.IllegalArgumentException();
-		return true;
+		return numbers==n*n;
 	}
 	
 	public int numberOfOpenSites() {
@@ -51,13 +64,11 @@ public class Percolation {
 	}
 	
 	public boolean percolates() {
-		//TODO 解决判断是否渗漏的问题
-		return false;
+		return wqu.connected(0, n*n+1);
 	}
 	
 	
 	public static void main(String[] args) {
-		Percolation p = new Percolation(10);
 	}
 
 }
