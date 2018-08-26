@@ -1,11 +1,13 @@
 import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
 
 public class PercolationStats {
 	
-	double T=0;
+	int T=0;
 	double[] x;
-	double n = 0;
+	int n = 0;
 	
 	
 	public PercolationStats(int n,int trials) {
@@ -32,8 +34,18 @@ public class PercolationStats {
 	
 	public static void main(String[] args) {
 		PercolationStats pls = new PercolationStats(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+		pls.x = new double[pls.T];
+		for (int i = 0; i < pls.T; i++) {
+			Percolation percolation = new Percolation(pls.n);
+			while(!percolation.percolates()) {
+				percolation.open(StdRandom.uniform(1,pls.n+1),StdRandom.uniform(1,pls.n+1) );
+			}
+			pls.x[i] = percolation.numberOfOpenSites()/(pls.n*pls.n);
+		}
 		
-		
+		StdOut.printf("mean                    = %.18f", pls.mean());
+		StdOut.printf("stddev                  = %.18f", pls.stddev());
+		StdOut.printf("95% confidence interval = [%.18f, %.18f]", pls.confidenceLo(),pls.confidenceHi());
 	}
 
 }
